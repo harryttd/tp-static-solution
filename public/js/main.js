@@ -1,5 +1,6 @@
 var drawMarker;
-var prevMarker;
+var markerArr = [];
+
 $(function initializeMap (){
 
   var fullstackAcademy = new google.maps.LatLng(40.705086, -74.009151);
@@ -48,20 +49,20 @@ $(function initializeMap (){
     activity: '/images/star-3.png'
   };
 
-  drawMarker = function (type, coords) {
+  drawMarker = function (type, coords, index) {
     var latLng = new google.maps.LatLng(coords[0], coords[1]);
     var iconURL = iconURLs[type];
     var marker = new google.maps.Marker({
       icon: iconURL,
       position: latLng
     });
-    
+
     if (type === null) {
-      prevMarker.setMap(null);
+      markerArr[index].setMap(null);
     }
     else {
+      markerArr.push(marker);
       marker.setMap(currentMap);
-      prevMarker = marker;
     }
   };
 });

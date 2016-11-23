@@ -92,6 +92,7 @@
   var hotels = {{ hotels | dump | safe }};
   var restaurants = {{ restaurants | dump | safe }};
   var activities = {{ activities | dump | safe }};
+  let counter = 0;
 
   $(document).ready(function() {
     $(hotels).each(function(index, value) {
@@ -110,9 +111,10 @@
 
       if ($type === 'hotel') {
         if ($('#hotel-itenerary').is(':empty')) {
-          $('#hotel-itenerary').append(`<span class='title'>${$name}</span>`)
-            .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
+          $('#hotel-itenerary').append(`<span id=${counter} class='title'>${$name}</span>`)
+            .append(`<button id=${counter} class="btn btn-xs btn-danger remove btn-circle">x</button>`);
 
+          counter++;
           hotels.forEach(function(hotel) {
             if (hotel.name === $name) {
               drawMarker('hotel', hotel.place.location);
@@ -120,19 +122,23 @@
           });
         }
         else {
-          $('#hotel-itenerary').children('span').replaceWith(`<span class='title'>${$name}</span>`);
+          let prevHotel = $('#hotel-itenerary').children('span')[0];
+          $('#hotel-itenerary').children('span').replaceWith(`<span id=${counter} class='title'>${$name}</span>`);
+
+          counter++;
           hotels.forEach(function(hotel) {
             if (hotel.name === $name) {
-              drawMarker(null, [0,0]);
+              drawMarker(null, [0,0], prevHotel.id);
               drawMarker('hotel', hotel.place.location);
             }
           });
         }
       }
       else if ($type === 'restaurant') {
-        $('#restaurant-itenerary').append(`<span id=${$name} class='title'>${$name}</span>`)
-          .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
+        $('#restaurant-itenerary').append(`<span id=${counter} class='title'>${$name}</span>`)
+          .append(`<button id=${counter} class="btn btn-xs btn-danger remove btn-circle">x</button>`);
 
+        counter++;
         restaurants.forEach(function(restaurant) {
           if (restaurant.name === $name) {
             drawMarker('restaurant', restaurant.place.location)
@@ -141,9 +147,10 @@
 
       }
       else if ($type === 'activity') {
-        $('#activity-itenerary').append(`<span id=${$name} class='title'>${$name}</span>`)
-          .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
+        $('#activity-itenerary').append(`<span id=${counter} class='title'>${$name}</span>`)
+          .append(`<button id=${counter} class="btn btn-xs btn-danger remove btn-circle">x</button>`);
 
+        counter++;
         activities.forEach(function(activity) {
           if (activity.name === $name) {
             drawMarker('activity', activity.place.location)
@@ -153,9 +160,12 @@
   });
 
   $('#itinerary').on('click', 'button', function() {
+    console.log(this.id);
+    console.log(this.previousSibling);
     $(this).prev().remove();
     $(this).remove();
 
+    drawMarker(null, [0,0], this.id);
   });
 
 
