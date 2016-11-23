@@ -92,7 +92,7 @@
   var hotels = {{ hotels | dump | safe }};
   var restaurants = {{ restaurants | dump | safe }};
   var activities = {{ activities | dump | safe }};
-  console.log(hotels);
+
   $(document).ready(function() {
     $(hotels).each(function(index, value) {
       $('#hotel-choices').append('<option>' + value.name + '</option>')
@@ -105,30 +105,60 @@
     });
 
     $('#options-panel').on('click', 'button', function() {
-      let $selected = $(this).prev().val();
+      let $name = $(this).prev().val();
       let $type = $(this).prev().data('type');
 
       if ($type === 'hotel') {
         if ($('#hotel-itenerary').is(':empty')) {
-          $('#hotel-itenerary').append(`<span class='title'>${$selected}</span>`)
+          $('#hotel-itenerary').append(`<span class='title'>${$name}</span>`)
             .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
-          // drawMarker('hotel', [40.705137, -74.007624])
+
+          hotels.forEach(function(hotel) {
+            if (hotel.name === $name) {
+              drawMarker('hotel', hotel.place.location);
+            }
+          });
         }
         else {
-          $('#hotel-itenerary').children('span').replaceWith(`<span>${$selected}</span>`);
+          $('#hotel-itenerary').children('span').replaceWith(`<span class='title'>${$name}</span>`);
+          hotels.forEach(function(hotel) {
+            if (hotel.name === $name) {
+              drawMarker(null, [0,0]);
+              drawMarker('hotel', hotel.place.location);
+            }
+          });
         }
       }
       else if ($type === 'restaurant') {
-        $('#restaurant-itenerary').append(`<span id=${$selected} class='title'>${$selected}</span>`)
+        $('#restaurant-itenerary').append(`<span id=${$name} class='title'>${$name}</span>`)
           .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
+
+        restaurants.forEach(function(restaurant) {
+          if (restaurant.name === $name) {
+            drawMarker('restaurant', restaurant.place.location)
+          }
+        });
+
       }
       else if ($type === 'activity') {
-        $('#activity-itenerary').append(`<span id=${$selected} class='title'>${$selected}</span>`)
+        $('#activity-itenerary').append(`<span id=${$name} class='title'>${$name}</span>`)
           .append(`<button class="btn btn-xs btn-danger remove btn-circle">x</button>`);
+
+        activities.forEach(function(activity) {
+          if (activity.name === $name) {
+            drawMarker('activity', activity.place.location)
+          }
+        });
       }
   });
 
-  // drawMarker('hotel', [40.705137, -74.007624]);
+  $('#itinerary').on('click', 'button', function() {
+    $(this).prev().remove();
+    $(this).remove();
+
+  });
+
+
 });
 
 
